@@ -1,3 +1,6 @@
+import json
+
+
 from django.http import JsonResponse
 from django.templatetags.static import static
 
@@ -59,4 +62,10 @@ def product_list_api(request):
 
 def register_order(request):
     # TODO это лишь заглушка
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode())
+            print(data)
+        except ValueError:
+            print('мимо')
     return JsonResponse({})

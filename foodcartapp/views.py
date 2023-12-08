@@ -1,11 +1,20 @@
 import json
+import os
 
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
+from jsonschema import validate
 
 from .models import Product, Order, OrderItem
+
+
+current_dir = os.path.dirname(__file__)
+filepath = os.path.join(current_dir, 'schemas', 'order_schema.json')
+with open(filepath, 'r') as schema_file:
+    order_schema = json.load(schema_file)
 
 
 def banners_list_api(request):
@@ -63,6 +72,10 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     order_params = request.data
+    is_valid_order, err = check_order_params(order_params)
+    if not is_valid_order:
+        return Response({'error': err}, status=status.HTTP_400_BAD_REQUEST)
+
     order = Order.objects.create(
         firstname=order_params.get('firstname'),
         lastname=order_params.get('lastname'),
@@ -81,3 +94,13 @@ def register_order(request):
             quantity=product_item.get('quantity')
         )
     return Response(order_params)
+
+
+def check_order_params(order):
+    try:
+        validate(instance=order, schema=order_schema)
+    except Exception as err:
+        return (False, str(err).replace("\n", " "))
+    return (True, '')
+
+

@@ -5,4 +5,4 @@ environs[django]==9.3.2
 phonenumberslite==8.13.25
 django-phonenumber-field==7.2.0
 djangorestframework==3.14.0
-
+jsonschema==4.20.0

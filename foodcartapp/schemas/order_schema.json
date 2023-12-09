@@ -15,7 +15,10 @@
         },
         "firstname": {"type": "string"},
         "lastname": {"type": "string"},
-        "phonenumber": {"type": "string"},
+        "phonenumber": {
+            "type": "string",
+            "minLength": 1
+        },
         "address": {"type": "string"}
     },
     "required": ["products", "firstname", "lastname", "phonenumber", "address"]

@@ -1,12 +1,13 @@
 import json
 import os
 
+import phonenumbers
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from jsonschema import validate
+from jsonschema import validate, ValidationError
 
 from .models import Product, Order, OrderItem
 
@@ -86,7 +87,13 @@ def register_order(request):
 
     for product_item in product_list:
         product_id = product_item.get('product')
-        product = Product.objects.get(pk=product_id)
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist as err:
+            return Response(
+                {'error': str(err)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         OrderItem.objects.create(
             order=order,
@@ -96,10 +103,21 @@ def register_order(request):
     return Response(order_params)
 
 
+def check_phonenumber(phonenumber):
+    err = f'Invalid phone number: {phonenumber}'
+    try:
+        parsed_number = phonenumbers.parse(phonenumber, region='RU')
+        if not phonenumbers.is_valid_number(parsed_number):
+            raise ValidationError(err)
+    except phonenumbers.NumberParseException as e:
+        raise ValidationError(err + str(e))
+
+
 def check_order_params(order):
     try:
         validate(instance=order, schema=order_schema)
-    except Exception as err:
+        check_phonenumber(order['phonenumber'])
+    except ValidationError as err:
         return (False, str(err).replace("\n", " "))
     return (True, '')
 

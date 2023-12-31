@@ -86,4 +86,4 @@ def register_order(request):
             product=product,
             quantity=product_item.get('quantity')
         )
-    return Response(order_params)
+    return Response(OrderSerializer(order).data)

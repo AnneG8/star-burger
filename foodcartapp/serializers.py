@@ -11,7 +11,11 @@ class OrderItemSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OrderItemSerializer(many=True, allow_empty=False)
+    products = OrderItemSerializer(
+        many=True,
+        allow_empty=False,
+        write_only=True
+    )
 
     def validate_phonenumber(self, value):
         parsed_number = phonenumbers.parse(value, region='RU')
@@ -22,6 +26,7 @@ class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = [
+            'id',
             'products',
             'firstname',
             'lastname',

@@ -1,21 +1,11 @@
-import json
-import os
-
-import phonenumbers
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
-from jsonschema import validate, ValidationError
+from rest_framework.serializers import ValidationError
 
 from .models import Product, Order, OrderItem
-
-
-current_dir = os.path.dirname(__file__)
-filepath = os.path.join(current_dir, 'schemas', 'order_schema.json')
-with open(filepath, 'r') as schema_file:
-    order_schema = json.load(schema_file)
+from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
@@ -73,9 +63,8 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     order_params = request.data
-    is_valid_order, err = check_order_params(order_params)
-    if not is_valid_order:
-        return Response({'error': err}, status=status.HTTP_400_BAD_REQUEST)
+    serializer = OrderSerializer(data=order_params)
+    serializer.is_valid(raise_exception=True)
 
     order = Order.objects.create(
         firstname=order_params.get('firstname'),
@@ -90,10 +79,7 @@ def register_order(request):
         try:
             product = Product.objects.get(pk=product_id)
         except Product.DoesNotExist as err:
-            return Response(
-                {'error': str(err)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            raise ValidationError([str(err)])
 
         OrderItem.objects.create(
             order=order,
@@ -101,24 +87,3 @@ def register_order(request):
             quantity=product_item.get('quantity')
         )
     return Response(order_params)
-
-
-def check_phonenumber(phonenumber):
-    err = f'Invalid phone number: {phonenumber}'
-    try:
-        parsed_number = phonenumbers.parse(phonenumber, region='RU')
-        if not phonenumbers.is_valid_number(parsed_number):
-            raise ValidationError(err)
-    except phonenumbers.NumberParseException as e:
-        raise ValidationError(err + str(e))
-
-
-def check_order_params(order):
-    try:
-        validate(instance=order, schema=order_schema)
-        check_phonenumber(order['phonenumber'])
-    except ValidationError as err:
-        return (False, str(err).replace("\n", " "))
-    return (True, '')
-
-

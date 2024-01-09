@@ -120,6 +120,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
     list_display = [
         'address',
+        'cost',
         'firstname',
         'lastname',
     ]
@@ -129,6 +130,7 @@ class OrderAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Общее', {
             'fields': [
+                'cost',
                 'address',
                 'firstname',
                 'lastname',
@@ -136,3 +138,22 @@ class OrderAdmin(admin.ModelAdmin):
             ]
         }),
     )
+    readonly_fields = [
+        'cost',
+    ]
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.price = instance.product.price
+            instance.save()
+        formset.save_m2m()
+        super().save_formset(request, form, formset, change)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.fetch_with_cost()
+
+    def cost(self, obj):
+        return obj.cost
+    cost.short_description = 'Стоимость'

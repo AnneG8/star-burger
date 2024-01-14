@@ -121,11 +121,12 @@ class OrderAdmin(admin.ModelAdmin):
         'address',
     ]
     list_display = [
-        'address',
         'registrated_at',
         'status',
+        'restaurant',
         'payment_method',
         'cost',
+        'address',
         'firstname',
         'lastname',
     ]
@@ -138,6 +139,7 @@ class OrderAdmin(admin.ModelAdmin):
                 'cost',
                 'payment_method',
                 'status',
+                'restaurant',
                 'registrated_at',
                 'called_at',
                 'delivered_at',
@@ -155,6 +157,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_editable = [
         'status',
         'payment_method',
+        'restaurant',
     ]
 
     def save_formset(self, request, form, formset, change):

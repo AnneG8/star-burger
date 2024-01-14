@@ -1,3 +1,5 @@
+from functools import reduce
+
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
@@ -6,7 +8,6 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-
 
 from foodcartapp.models import Product, Restaurant, Order
 
@@ -92,8 +93,25 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    order_items = Order.objects.exclude(status=Order.RECEIVED)\
-                               .fetch_with_cost()
+    active_orders = Order.objects.exclude(status=Order.RECEIVED)\
+                                 .fetch_with_cost()\
+                                 .prefetch_related('products')
+    for order in active_orders:
+        products = [product for product in order.products.all()]
+        order.restaurants = get_available_restaurants(products)
     return render(request, template_name='order_items.html', context={
-        'order_items': order_items
+        'order_items': active_orders
     })
+
+def get_available_restaurants(products):
+    products_ids = [product.id for product in products]
+    products = Product.objects.filter(id__in=products_ids)\
+                              .prefetch_related('menu_items')
+    availability = []
+    for product in products:
+        available_restaurants = set()
+        for item in product.menu_items.all():
+            if item.availability:
+                available_restaurants.add(item.restaurant)
+        availability.append(available_restaurants)
+    return reduce(set.intersection, availability)

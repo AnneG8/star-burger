@@ -183,6 +183,14 @@ class Order(models.Model):
         default=CASH,
         db_index=True
     )
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='orders',
+        verbose_name='исполняющий ресторан'
+    )
     firstname = models.CharField(
         'имя',
         max_length=50

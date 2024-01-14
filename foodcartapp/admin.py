@@ -122,6 +122,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
     list_display = [
         'address',
+        'status',
         'cost',
         'firstname',
         'lastname',
@@ -133,6 +134,7 @@ class OrderAdmin(admin.ModelAdmin):
         ('Общее', {
             'fields': [
                 'cost',
+                'status',
                 'address',
                 'firstname',
                 'lastname',

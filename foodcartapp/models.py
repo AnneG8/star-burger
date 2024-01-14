@@ -133,6 +133,12 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
+    STATUSES = [
+        (0, 'Принят'),
+        (1, 'Собирается'),
+        (2, 'В пути'),
+        (3, 'Получен')
+    ]
     products = models.ManyToManyField(
         Product,
         through='OrderItem',
@@ -153,6 +159,12 @@ class Order(models.Model):
     )
     address = models.TextField(
         'адрес доставки'
+    )
+    status = models.IntegerField(
+        'статус',
+        choices=STATUSES,
+        default=0,
+        db_index=True
     )
 
     objects = OrderQuerySet.as_manager()

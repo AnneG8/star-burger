@@ -122,6 +122,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
     list_display = [
         'address',
+        'registrated_at',
         'status',
         'cost',
         'firstname',
@@ -135,6 +136,9 @@ class OrderAdmin(admin.ModelAdmin):
             'fields': [
                 'cost',
                 'status',
+                'registrated_at',
+                'called_at',
+                'delivered_at',
                 'address',
                 'firstname',
                 'lastname',
@@ -144,6 +148,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
     readonly_fields = [
         'cost',
+        'registrated_at',
     ]
 
     def save_formset(self, request, form, formset, change):

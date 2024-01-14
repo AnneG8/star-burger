@@ -1,7 +1,8 @@
 from rest_framework.serializers import ModelSerializer, ValidationError
 import phonenumbers
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Restaurant
+from .utils import fetch_coordinates
 
 
 class OrderItemSerializer(ModelSerializer):
@@ -32,4 +33,20 @@ class OrderSerializer(ModelSerializer):
             'lastname',
             'phonenumber',
             'address'
+        ]
+
+
+class RestaurantSerializer(ModelSerializer):
+    def validate_address(self, value):
+        coordinates = fetch_coordinates(value)
+        if not coordinates:
+            raise ValidationError(f'Invalid address: {value}')
+        return value
+
+    class Meta:
+        model = Restaurant
+        fields = [
+            'name',
+            'address',
+            'contact_phone'
         ]

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Sum, F, DecimalField
+from django.db.models import Sum, F
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
@@ -18,6 +18,14 @@ class Restaurant(models.Model):
     contact_phone = models.CharField(
         'контактный телефон',
         max_length=50,
+        blank=True,
+    )
+    lat = models.FloatField(
+        'широта',
+        blank=True,
+    )
+    lon = models.FloatField(
+        'долгота',
         blank=True,
     )
 

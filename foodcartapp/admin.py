@@ -10,6 +10,8 @@ from .models import Restaurant
 from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderItem
+from .serializers import RestaurantSerializer
+from .utils import fetch_coordinates
 import star_burger.settings as settings
 
 
@@ -35,9 +37,19 @@ class RestaurantAdmin(admin.ModelAdmin):
         'address',
         'contact_phone',
     ]
+    readonly_fields = [
+        'lat',
+        'lon',
+    ]
     inlines = [
         RestaurantMenuItemInline
     ]
+
+    def save_model(self, request, obj, form, change):
+        serializer = RestaurantSerializer(data=request.POST)
+        if serializer.is_valid(raise_exception=True):
+            obj.lon, obj.lat = fetch_coordinates(obj.address)
+            super().save_model(request, obj, form, change)
 
 
 @admin.register(Product)

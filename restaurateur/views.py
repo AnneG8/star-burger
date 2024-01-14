@@ -92,7 +92,8 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    order_items = Order.objects.exclude(status=3).fetch_with_cost()
+    order_items = Order.objects.exclude(status=Order.RECEIVED)\
+                               .fetch_with_cost()
     return render(request, template_name='order_items.html', context={
         'order_items': order_items
     })

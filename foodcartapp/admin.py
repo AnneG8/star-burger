@@ -124,6 +124,7 @@ class OrderAdmin(admin.ModelAdmin):
         'address',
         'registrated_at',
         'status',
+        'payment_method',
         'cost',
         'firstname',
         'lastname',
@@ -135,6 +136,7 @@ class OrderAdmin(admin.ModelAdmin):
         ('Общее', {
             'fields': [
                 'cost',
+                'payment_method',
                 'status',
                 'registrated_at',
                 'called_at',
@@ -150,6 +152,10 @@ class OrderAdmin(admin.ModelAdmin):
         'cost',
         'registrated_at',
     ]
+    list_editable = [
+        'status',
+        'payment_method',
+    ]
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
@@ -164,7 +170,7 @@ class OrderAdmin(admin.ModelAdmin):
         return qs.fetch_with_cost()
 
     def cost(self, obj):
-        return obj.cost
+        return f'{obj.cost} руб.'
     cost.short_description = 'Стоимость'
 
     def response_post_save_change(self, request, obj):

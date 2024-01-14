@@ -134,11 +134,24 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
+    ACCEPTED = 'accepted'
+    IN_PROCESS = 'in process'
+    IN_DELIVERY = 'in delivery'
+    RECEIVED = 'received'
+    ONLINE = 'online'
+    CARD = 'by card'
+    CASH = 'cash'
+
     STATUSES = [
-        (0, 'Принят'),
-        (1, 'Собирается'),
-        (2, 'В пути'),
-        (3, 'Получен')
+        (ACCEPTED, 'Принят'),
+        (IN_PROCESS, 'Собирается'),
+        (IN_DELIVERY, 'В пути'),
+        (RECEIVED, 'Получен')
+    ]
+    PAYMENT_METHODS= [
+        (ONLINE, 'Картой онлайн'),
+        (CARD, 'Картой при получении'),
+        (CASH, 'Наличными при получении')
     ]
     products = models.ManyToManyField(
         Product,
@@ -163,6 +176,13 @@ class Order(models.Model):
         blank=True,
         db_index=True
     )
+    payment_method = models.CharField(
+        'способ оплаты',
+        max_length=7,
+        choices=PAYMENT_METHODS,
+        default=CASH,
+        db_index=True
+    )
     firstname = models.CharField(
         'имя',
         max_length=50
@@ -178,10 +198,11 @@ class Order(models.Model):
     address = models.TextField(
         'адрес доставки'
     )
-    status = models.IntegerField(
+    status = models.CharField(
         'статус',
+        max_length=11,
         choices=STATUSES,
-        default=0,
+        default=ACCEPTED,
         db_index=True
     )
     comment = models.TextField(

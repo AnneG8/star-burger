@@ -103,7 +103,7 @@ def view_orders(request):
         if order_coordinates:
             for restaurant in order_restaurants:
                 restaurant.distance = get_distance(
-                    restaurant.get_coordinates(),
+                    restaurant.coordinates.get_coordinates(),
                     order_coordinates
                 )
             order.restaurants = order_restaurants

@@ -4,6 +4,8 @@ from django.core.validators import MinValueValidator
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from locations.models import Location
+
 
 class Restaurant(models.Model):
     name = models.CharField(
@@ -20,13 +22,12 @@ class Restaurant(models.Model):
         max_length=50,
         blank=True,
     )
-    lat = models.FloatField(
-        'широта',
+    coordinates = models.ForeignKey(
+        Location,
+        verbose_name='локация',
+        null=True,
         blank=True,
-    )
-    lon = models.FloatField(
-        'долгота',
-        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     class Meta:
@@ -35,9 +36,6 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return self.name
-
-    def get_coordinates(self):
-        return self.lat, self.lon
 
 
 class ProductQuerySet(models.QuerySet):

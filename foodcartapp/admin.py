@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.shortcuts import reverse, redirect, HttpResponseRedirect
+from django.shortcuts import reverse, redirect, get_object_or_404
+
 from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -12,6 +13,7 @@ from .models import Order
 from .models import OrderItem
 from .serializers import RestaurantSerializer
 from .utils import fetch_coordinates
+from locations.models import Location
 import star_burger.settings as settings
 
 
@@ -37,10 +39,6 @@ class RestaurantAdmin(admin.ModelAdmin):
         'address',
         'contact_phone',
     ]
-    readonly_fields = [
-        'lat',
-        'lon',
-    ]
     inlines = [
         RestaurantMenuItemInline
     ]
@@ -48,7 +46,16 @@ class RestaurantAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         serializer = RestaurantSerializer(data=request.POST)
         if serializer.is_valid(raise_exception=True):
-            obj.lon, obj.lat = fetch_coordinates(obj.address)
+            try:
+                location = Location.objects.get(address=obj.address)
+            except Location.DoesNotExist:
+                lon, lat = fetch_coordinates(obj.address)
+                location = Location.objects.create(
+                    lat=lat,
+                    lon=lon,
+                    address=obj.address
+                )
+            obj.coordinates = location
             super().save_model(request, obj, form, change)
 
 

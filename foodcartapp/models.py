@@ -36,6 +36,9 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+    def get_coordinates(self):
+        return self.lat, self.lon
+
 
 class ProductQuerySet(models.QuerySet):
     def available(self):
@@ -234,6 +237,7 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Заказ №{self.id} по адресу {self.address}"
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(

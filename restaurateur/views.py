@@ -1,15 +1,15 @@
 from functools import reduce
 
 from django import forms
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
-from django.contrib.auth.decorators import user_passes_test
-
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import views as auth_views
 
 from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.utils import fetch_coordinates, get_distance
 
 
 class Login(forms.Form):
@@ -98,10 +98,19 @@ def view_orders(request):
                                  .prefetch_related('products')
     for order in active_orders:
         products = [product for product in order.products.all()]
-        order.restaurants = get_available_restaurants(products)
+        order_restaurants = get_available_restaurants(products)
+        order_coordinates = fetch_coordinates(order.address)
+        if order_coordinates:
+            for restaurant in order_restaurants:
+                restaurant.distance = get_distance(
+                    restaurant.get_coordinates(),
+                    order_coordinates
+                )
+            order.restaurants = order_restaurants
     return render(request, template_name='order_items.html', context={
         'order_items': active_orders
     })
+
 
 def get_available_restaurants(products):
     products_ids = [product.id for product in products]

@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from geopy import distance as dist
 import requests
 
 
@@ -20,3 +21,7 @@ def fetch_coordinates(address, apikey=settings.YANDEX_GEOCODER_KEY):
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
     return lon, lat
 
+
+def get_distance(from_, to_):
+    distance = dist.distance(from_, to_).km
+    return round(distance)

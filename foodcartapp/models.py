@@ -168,7 +168,7 @@ class Order(models.Model):
         related_name='orders',
         verbose_name='продукты',
     )
-    registrated_at = models.DateTimeField(
+    registered_at = models.DateTimeField(
         'зарегистрирован',
         default=timezone.now,
         db_index=True

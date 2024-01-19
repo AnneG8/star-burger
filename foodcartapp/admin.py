@@ -140,7 +140,7 @@ class OrderAdmin(admin.ModelAdmin):
         'address',
     ]
     list_display = [
-        'registrated_at',
+        'registered_at',
         'status',
         'restaurant',
         'payment_method',
@@ -159,7 +159,7 @@ class OrderAdmin(admin.ModelAdmin):
                 'payment_method',
                 'status',
                 'restaurant',
-                'registrated_at',
+                'registered_at',
                 'called_at',
                 'delivered_at',
                 'address',
@@ -171,7 +171,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
     readonly_fields = [
         'cost',
-        'registrated_at',
+        'registered_at',
     ]
     list_editable = [
         'status',

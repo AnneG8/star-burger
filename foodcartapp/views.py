@@ -3,9 +3,8 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError
 
-from .models import Product, Order, OrderItem
+from .models import Product
 from .serializers import OrderSerializer
 
 
@@ -67,25 +66,5 @@ def register_order(request):
     order_params = request.data
     serializer = OrderSerializer(data=order_params)
     serializer.is_valid(raise_exception=True)
-
-    order = Order.objects.create(
-        firstname=order_params.get('firstname'),
-        lastname=order_params.get('lastname'),
-        phonenumber=order_params.get('phonenumber'),
-        address=order_params.get('address')
-    )
-    product_list = order_params.get('products')
-
-    for product_item in product_list:
-        product_id = product_item.get('product')
-        try:
-            product = Product.objects.get(pk=product_id)
-        except Product.DoesNotExist as err:
-            raise ValidationError([str(err)])
-
-        OrderItem.objects.create(
-            order=order,
-            product=product,
-            quantity=product_item.get('quantity')
-        )
+    order = serializer.create(serializer.validated_data)
     return Response(OrderSerializer(order).data)

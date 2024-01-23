@@ -5,16 +5,18 @@ import requests
 
 
 def fetch_coordinates(address, apikey=settings.YANDEX_GEOCODER_KEY):
-    base_url = "https://geocode-maps.yandex.ru/1.x"
-    response = requests.get(base_url, params={
-        "geocode": address,
-        "apikey": apikey,
-        "format": "json",
-    })
-    response.raise_for_status()
-    found_places = response.json()['response']['GeoObjectCollection']['featureMember']
-
-    if not found_places:
+    try:
+        base_url = "https://geocode-maps.yandex.ru/1.x"
+        response = requests.get(base_url, params={
+            "geocode": address,
+            "apikey": apikey,
+            "format": "json",
+        })
+        response.raise_for_status()
+        found_places = response.json()['response']['GeoObjectCollection']['featureMember']
+        if not found_places:
+            return None
+    except (requests.exceptions.HTTPError, KeyError):
         return None
 
     most_relevant = found_places[0]

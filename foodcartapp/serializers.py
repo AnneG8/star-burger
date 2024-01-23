@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, ValidationError
-import phonenumbers
+from phonenumber_field.phonenumber import PhoneNumber
 
 from .models import Order, OrderItem, Restaurant
 from .utils import fetch_coordinates
@@ -19,10 +19,10 @@ class OrderSerializer(ModelSerializer):
     )
 
     def validate_phonenumber(self, value):
-        parsed_number = phonenumbers.parse(value, region='RU')
-        if not phonenumbers.is_valid_number(parsed_number):
+        phonenumber = PhoneNumber.from_string(value, 'RU')
+        if not phonenumber.is_valid():
             raise ValidationError(f'Invalid phone number: {value}')
-        return parsed_number
+        return phonenumber
 
     def create(self, validated_data):
         order = Order.objects.create(

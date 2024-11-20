@@ -54,12 +54,23 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+Установите PostgreSQL и [подготовьте](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-22-04) базу данных и её пользователя.
+
 Определите переменную окружения `SECRET_KEY`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
 ```sh
 SECRET_KEY=django-insecure-0if40nf4nf93n4
+POSTGRES_DB_URL=postgres://star_burger_user:devman_lesson@localhost:5432/star_burger
+YANDEX_GEOCODER_KEY='f45d5c33-1724-4762-ad61-9981d78e98b0'
+ALLOWED_HOSTS=*,'45.9.42.54',
+POST_SERVER_ITEM_ACCESS_TOKEN='cd3981e3ae5f427ebb830354639a8d78'
 ```
+где
+- `POSTGRES_DB_URL` - url для доступа к базе данных PostgreSQL в формате `postgres://USER:PASSWORD@HOST:PORT/NAME`;
+- `YANDEX_GEOCODER_KEY` - ключ к API [Яндекс Геокодера](https://yandex.ru/maps-api/products/geocoder-api);
+- `ALLOWED_HOSTS` - IP-адреса и доменные имена, которым разрешено подключаться к проекту;
+- `POST_SERVER_ITEM_ACCESS_TOKEN` - токен доступа от [Rollbar](https://rollbar.com), сервиса для отслеживания и логирования ошибок.
 
-Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
+Отмигрируйте базу данных командой:
 
 ```sh
 python manage.py migrate
@@ -147,8 +158,9 @@ Parcel будет следить за файлами в каталоге `bundle
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-- `YANDEX_GEOCODER_KEY` — API ключ Яндекс-геокодера, получить [здесь](https://developer.tech.yandex.ru/).
-- `POST_SERVER_ITEM_ACCESS_TOKEN` — токен доступа проекта в [Rollbar](rollbar.com).  
+- `YANDEX_GEOCODER_KEY` — API ключ Яндекс-Геокодера, получить [здесь](https://developer.tech.yandex.ru/).
+- `POST_SERVER_ITEM_ACCESS_TOKEN` — токен доступа проекта в [Rollbar](rollbar.com).
+- `POSTGRES_DB_URL` - url для доступа к базе данных PostgreSQL в формате `postgres://USER:PASSWORD@HOST:PORT/NAME`.
 
 ## Цели проекта
 

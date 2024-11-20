@@ -4,13 +4,13 @@ import dj_database_url
 
 from environs import Env
 
-
 env = Env()
 env.read_env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+POSTGRES_DB_URL = env.str('POSTGRES_DB_URL')
 YANDEX_GEOCODER_KEY = env('YANDEX_GEOCODER_KEY')
 
 SECRET_KEY = env('SECRET_KEY')
@@ -86,7 +86,7 @@ MEDIA_URL = '/media/'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:////{0}'.format(os.path.join(BASE_DIR, 'db.sqlite3'))
+        default=POSTGRES_DB_URL
     )
 }
 

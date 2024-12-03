@@ -10,7 +10,7 @@ fi
 
 cd /opt/star-burger/
 
-git pull origin main
+git pull origin master
 
 ./venv/bin/pip install -r requirements.txt
 npm ci

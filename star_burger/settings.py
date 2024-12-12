@@ -133,7 +133,7 @@ ROLLBAR_ENVIRONMENT = env.str('ROLLBAR_ENVIRONMENT', 'default_environment')
 
 ROLLBAR = {
     'access_token': POST_SERVER_ITEM_ACCESS_TOKEN,
-    'environment': 'development' if DEBUG else 'production',
+    'environment': ROLLBAR_ENVIRONMENT,
     'code_version': '1.0',
     'root': BASE_DIR,
 }

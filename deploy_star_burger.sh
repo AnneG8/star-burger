@@ -20,7 +20,6 @@ npm ci
 ./venv/bin/python3.10 manage.py collectstatic --noinput
 ./venv/bin/python3.10 manage.py migrate --noinput
 
-systemctl daemon-reload
 systemctl restart star-burger-django.service
 systemctl reload nginx
 

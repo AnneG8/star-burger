@@ -1,0 +1,43 @@
+version: '3'
+services:
+  database:
+    image: postgres:14.15
+    container_name: star_burger_postgres
+    restart: always
+    env_file: ./backend/.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  frontend:
+    container_name: star_burger_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - /var/www/frontend/:/star-burger/collectstatic
+
+  backend:
+    container_name: star_burger_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: [
+      "./wait-for-postgres.sh",
+      "database:5432",
+      "python manage.py migrate --noinput &&
+      python manage.py collectstatic --noinput &&
+      gunicorn star_burger.wsgi:application --bind 0.0.0.0:8000"
+      ]
+    depends_on:
+      - database
+      - frontend
+    volumes:
+      - /var/www/frontend/:/star-burger/collectstatic
+      - /var/www/media:/star-burger/media
+
+volumes:
+  pg_data:

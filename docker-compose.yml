@@ -14,7 +14,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - /var/www/frontend/:/star-burger/collectstatic
+      - /var/www/frontend/:/star-burger/staticfiles
 
   backend:
     container_name: star_burger_backend
@@ -36,7 +36,7 @@ services:
       - database
       - frontend
     volumes:
-      - /var/www/frontend/:/star-burger/collectstatic
+      - /var/www/frontend/:/star-burger/staticfiles
       - /var/www/media:/star-burger/media
 
 volumes:
